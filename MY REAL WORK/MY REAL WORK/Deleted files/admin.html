@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin dashboard</title>
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --border: #d9e1e8;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #334155;
+            --primary-soft: #e2e8f0;
+            --acent: #0f172a;
+            --success: #166534;
+            --success-bg: #dcfce7;
+            --warning: #92400e;
+            --warning-bg: #b91c1c;
+            --danger: #b91c1c;
+            --danger-bg: #fee2e2;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+        }
+
+        .sidebar {
+            background: var(--accent);
+            color:#d9e1e8;
+            padding: 28px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            letter-spacing: 0.02em;    
+        }
+
+        .brand p {
+            margin: 8px 0 0;
+            color:#dcfce7;
+            font-size: 0.95rem
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            border: 1px solid transparent;
+            background:blue;
+            color:#dcfce7;
+            padding: 14px 16px;
+            text-align: left;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .main {
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+
+        .topbar p {
+            margin: 6px 0 0;
+            color: var(--muted);
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            border-radius: 14px;
+            padding: 14px 18px;
+            width: 150px
+        }
+
+        .stat-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-card strong {
+            font-size: 1.35rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .card-header {
+            padding: 20px 20px 10px
+        }
+
+        .card-header h3 {
+            margin: auto;
+            font-size: 1.1rem;
+        }
+
+        .card-header p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 12px;
+            padding: 11px 13px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+        }
+
+        .error{
+            color: var(--danger);
+            font-size: 0.84rem;
+            min-height: 1em;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover { background: #d5deea}
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .toolbar h3 {
+            margin: 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            padding: 16px 20px 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width:760px;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var (--muted);
+            background: var(--surface-2);
+        }
+
+        tr:hover td {
+            background: #fbfdff;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-available,
+        .status-active {
+            color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .status-unavailable,
+        .status-suspended {
+            color: var(--warning);
+            background: var(--warning-bg);
+        }
+
+        .action {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            padding: 26px 20px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            width: min(680px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--surface);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25)
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            font-size: 1.35rem;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 780px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                padding: 20px;
+            }
+
+            .nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                flex: 1 1 220px;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Admin panel</h1>
+                <p>Equipment inventory and user account dashboard</p>
+            </div>
+
+            <nav class="nav">
+                <button class="nav-btn active" data-section="equimentsection">Equipment Management</button>
+                <button class="nav-btn active" data-section="usersection">User Management</button>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+            </div>
+            <h2 id="pageTitle">Euipment Management</h2>
+            <p id="pagesubtitle">Track rental inventory, update stock, and manage availability.</p>
+        </div>
+        <div class="stats" id="statscontainer">
+        </div>
+
+        <section id="equipmentsection" class="section active">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Add Equipment</h3>
+                        <p>create a new inventory item for rental operations.</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="equipmentForm" novalidate>
+                            <div class="field">
+                                <label for="equipmentCategory">Category</label>
+                                <input type="text" id="equipmentName" name="equipmentName" placeholder="lighting"/>
+                                <div class="error" data-error-for="equipmentName"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="equipmentDescription">Description</label>
+                                <input type="text" id="equipmentDescription" name="equipmentDescription" placeholder="Brief description"></textarea>
+                                <div class="error" data-error-for="equipmentDescription"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="equipmentQuantity">Quantity Available</label>
+                                <input type="number" min="0" id="equipmentQuantity" name="equipmentQuantity" placeholder="e.g 6"/>
+                                <div class="error" data-error-for="equipmentQuantity"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="equipmentPrice">Rental price per day($)</label>
+                                <input type="number" min="0" step="0.01" id="equipmentPrice" name="equipmentDescription" placeholder="e.g. 28" />
+                                <div class="error" data-error-for="equipmentPrice"></div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Add Equipment</button>
+                                <button type="reset" class="btn btn-secondary" id="equipmentResetBtn">clear</button>
+                            </div>
+                        </form> 
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <div>
+                            <h3>inventory List</h3>
+                            <p class="muted">Edith details, change status, or remove equipment entries.</p>
+                        </div>
+                     </div>
+                     <div id="equipmentTableContainer" class="table-wrap"></div>
+                </div>
+              </div>
+            </section>
+
+            <section id="userSection" class="section">
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Add User Account</h3>
+                            <p>Create a new user and assign the appropriate role.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="userform" novalidate>
+                                <div class="field">
+                                    <label for="userName">Name</label>
+                                    <input type="text" id="userName" name="userName" placeholder="e.g. favy" />
+                                    <div class="error" data-error-for="userName"></div>
+                                </div>
+                                
+                                <div class="field">
+                                    <label for="userEmail">Email</label>
+                                    <input type="text" id="userEmail" name="userEmail" placeholder="e.g. favy@emaple.com" />
+                                    <div class="error" data-error-for="userEmial"></div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="userRole">Role</label>
+                                    <select id="userRole" name="userRole">
+                                        <option value="">Select role</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="user">User</option>
+                                    </select>
+                                    <div class="error" data-eror-for="userRole"></div>
+                                </div>
+
+                                <div class="form-action">
+                                    <button type="submit" class="btn btn-primary">Add User</button>
+                                    <button type="reset" class="btn btn-secondary" id="userResetBtn">Clear</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="toolbar">
+                            <div>
+                                <h3>User Accounts</h3>
+                                <p class="muted">Mange roles, account status, and account records.</p>
+                            </div>
+                        </div>
+                        <div id="userTablecontainer" class="table-wrap"></div>
+                    </div>
+                </div>
+            </section>
+        </main>    
+     </div>
+
+     <div class="model-overlay" id="editModaloverlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edith Record</h3>
+                <button class="close-btn" id="closeModalBtn" aria-label="close modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+     </div>
+    
+
+     <script>
+        const equipmentData =[
+            {
+                id: crypto.randomUUID(),
+                name: 'LumaForge light',
+                category: 'light',
+                description: 'Cutting-edge light technology — great for professional or industrial lighting gear.',
+                quantity: 2,
+                priceperDay: 54,
+                status: 'available'   
+            },
+            {
+                id: crypto.randomUUID(),
+                name: 'GlowCraft',
+                category: 'light',
+                description: 'Ideal for decorative or studio lighting.',
+                quantity: 5,
+                priceperDay: 40,
+                status: 'available'
+            },
+            {
+                id: crypto.randomUUID(),
+                name: 'RadiancePro',
+                category: 'light',
+                description: 'Perfect for high-end, performance-focused lighting equipment..',
+                quantity: 3,
+                priceperDay: 50,
+                status: 'available'
+            }
+        ];
+
+        const userData =[
+            {
+                id: crypto.randomUUID(),
+                name: 'favour orji',
+                email: 'Favourorji000@gmail.com',
+                role: 'admin',
+                status: 'active'
+            },
+            {
+                id: crypto.randomUUID(),
+                name: 'favour orji',
+                email: 'Godsfavourorji43@gmail.com',
+                role: 'admin',
+                status: 'active'
+            },
+            {
+                id: crypto.randomUUID(),
+                name: 'Maureen',
+                email: 'maureenmaxwell09@gmail.com',
+                role: 'user',
+                status: 'suspended'
+            }
+        ];
+
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.sections');
+        const pageTitle = document.querySelectorAll('.pageTitle');
+        const pagesubtitle = document.querySelectorAll('.pageSubtitle');
+        const statscontainer = document.querySelectorAll('.statsContainer');
+
+        const equipmentForm = document.querySelectorAll('.equipmentForm');
+        const equipmentTableContainer = document.querySelectorAll('.equipmentTableContainer');
+        const userTablecontainer = document.querySelectorAll('.userTableContainer');
+
+        const editModaloverlay = document.querySelectorAll('.editModalOverlay');
+        const modalBody = document.querySelectorAll('.modalBody');
+        const modalTitle = document.querySelectorAll('.modalTitle');
+        const closeModalBtn = document.querySelectorAll('.closeModalBtn');
+
+        let activesection = 'equipmentSection';
+
+        navButtons,forEach(button => {
+            button.addEventLister('click', () =>{
+                const sectionId = button.dataset.section;
+                activesection = sectionId;
+
+                navButtons,forEach(btn => btn.classlist.toggle('active', btn === button));
+                sections,forEach(section => section.classlist.toggle('active', section.id===sectionId));
+
+                if (sectionId === 'quipmentSection') {
+                    pageTitle,textcontent = 'Equipment Management';
+                    pagesubtitle,textcontent = 'Track rental inventory, update stock, and manage availability.';
+                } else {
+                    pageTitle,textcontent = 'user Management';
+                    pagesubtitle,textcontent = 'view, add, edit, suspend, and remove registered users.';
+                }
+
+                renderStats();
+            });
+        });
+
+        function formatCurrency(value ) {
+            return new Intl. NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(value);
+        }
+
+        function escapeHtml(value) {
+            return string(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&1t;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        function clearFormErrors(form) {
+            form.querySelectorAll('.error').forEach(el => el.textcontent = '');
+        }
+
+        function setFieldError(form, fieldName, message) {
+            const errorEl = form.querySelector(`[data-error-for="${fieldName}"]`);
+            if (errorE1) errorE1.textcontent = message;
+        }
+
+        function validateEquipmentForm(form) {
+            clearFormErrors(form);
+            const data = Object.fromEntries(new FormData(form).entries());
+            let isValid = true;
+
+            if (!data,equipmentName,trim()) {
+                setFieldError(form, 'equipmentName', 'Equipment name is required.');
+                isValid = false;
+            }
+            if (!data.equipmentCategory,trim()) {
+                setFieldError(form, 'equipmentCategory', 'category is required.');
+                isValid = false;
+            }
+        }
+
+        function validateEquipmentForm(form) {
+            return {isvalid, data };
+        }
+
+        function validateUserForm(form, currentId = null) {
+            clearFormErrors(form);
+            const data = object.fromEntries(new FormData(form).entries());
+            let isValid = true;
+
+            if (!data.userName.trim()) {
+                setFieldError(form, 'userName', 'Name is required.');
+                isValid = false;
+            }
+
+            const email = data.userEmail.trim();
+            constemailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                setFieldError(form, 'userEmail', 'Enter is required.');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                setFieldError(form, 'userEmail', 'Enter a valid email address.');
+                isValid = false;
+            } else {
+                const duplicate = userData.find(user => user.email.toLowerCase() === email)
+                if (duplicate) {
+                    setFieldError(form, 'userEmail', 'This email is already in use.');
+                    isValid =false;
+                }
+            }
+
+            if (!data.userRole) {
+                setFieldError(form, 'userRole', 'Role is required.');
+                isValid =false;
+            }
+
+            return {isValid, data};
+        }
+
+        equipmentForm.addEventLister('submit',(event) => {
+            event.preventDefault();
+            const { isValid, data} =validateEquipmentForm(equipmentForm);
+            if (!isValid) return;
+
+            equipmentData.unshift({
+                id: crypto.randomUUID(),
+                name: data.equipmentName.trim(),
+                category: data.equipmentcategory.trim(),
+                description: data.equipmentDescription.trim(),
+                quantity: Number(data.equipmentQuantity),
+                priceperDay: Number(data.equipmentprice),
+                status: 'available'
+            });
+
+            equipmentForm.reset();
+            clearFormErrors(equipmentForm);
+            renderEquipmentTable();
+            renderStats();
+        });
+
+        userForm.addEventLister('submit', (event) => {
+            event.preventDefault();
+            const {isValid, data } = validateUserForm(userForm);
+            if (!isValid) return;
+
+            userData.unshift({
+                id:crypto.randomUUID(),
+                name: data.userName.trim(),
+                email: data.userEmail.trim(),
+                role: data.userRole,
+                status: 'active'
+            });
+
+            userForm.reset();
+            clearFormErrors(userForm);
+            renderUserTable();
+            renderstats();
+        });
+
+        function renderEquipmentTable() {
+            if (!equipmentData.length) {
+                equipmentTablecontainer.innerHTML = '<div class="empty-state">No equipment records found.</div>';
+                return;  
+            }
+
+            equipmentTableContainer.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>category</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price / Day</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                       </tr>
+                      </thead>
+                      <tbody>
+                        ${equipmentData.map(item => `
+                        <tr>
+                            <td><strong>${escapeHtml(item.name)}</strong></td>
+                            <td>${escapeHtml(item.category)}</td>
+                            <td>${escapeHtml(item.description)}</td>
+                            <td>${item.quantity}</td>
+                            <td>${formatCurrency(item.priceperDay)}</td>
+                            <td>
+                                <span class"status-badge ${item.status === 'available' ? 'status-available' : 'status-unavailable'}">
+                                    ${item.status === 'available' ? 'Available' : 'Unavailable'}
+                                    </span>
+                                   </td>
+                                   <td>
+                                    <div class="actions">
+                                        <button class="btn btn-secondary btn-small" onclick="openEquipmentEditModal('${item.id}')">Edit</button>
+                                        <button class="btn btn-secondary btn-small" onclick="toggleEuipmentStatus('${item.id}')">
+                                            ${item.status === 'available' ? 'Mark unavailable' : 'Mark Available'}
+                                            </button>
+                                            <button class="btn btn-secondary btn-small" onclick="deleteEquipment('${item.id}')">Delete</button>
+                                           </div>
+                                          </td>
+                                         </tr>
+                                       `).join('')}
+                                      </tbody>
+                                    </table>
+                                    `;
+        }
+
+        function renderUserTable() {
+            if (!userData.length) {
+                userTablecontainer.innerHTML = '<div class="empty-state"> No user accounts found.</div>';
+                return;
+            }
+
+            userTablecontainer.innerHTML = `
+              <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Account status</th>
+                        <th>Actions</th>
+                       </tr>
+                      </thead>
+                      <tbody>
+                        ${userData.map(user => `
+                          <tr>
+                            <td><strong>${escapeHtml(user.name)}</strong></td>
+                            <td>${escapeHtml(user.name)}</td>
+                            <td>${user.role === 'admin' ? 'Admin' : 'User'}</td>
+                            <td>
+                                <span class"status-badge ${user.status === 'active' ? 'status-active' : 'status-suspended'}">
+                                    ${user.status === 'active' ? 'Active' : 'Suspended'}
+                                  </span>
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn btn-secondary btn-small" onclick="openEquipmentEditModal('${user.id}')">Edit</button>
+                                        <button class="btn btn-secondary btn-small" onclick="toggleUserStatus('${user.id}')">
+                                            ${user.status === 'active' ? 'Suspend' : 'Activate'}
+                                          </button>
+                                          <button class="btn btn-danger btn-small" onclick="deleteUser('${user.id}')">Delete</button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  `).join('')}
+                                  </tbody>
+                                  </table>
+                                  `;
+        }
+
+        function renderStats() {
+            if (activesection === 'equipmentsection') {
+                const total = equipmentData.length;
+                const available = equipmentData.filter(item => item.status === 'admin'). length;
+                const totalUnits = equipmentData.reduce((sum,item) => sum + item.quantity, 0);
+                statscontainer.innerHTML = `
+                  <div class="stat-card"><span>Total Item</span><strong>${total}</strong></div>
+                  <div class="stat-card"><span>Available</span><strong>${total}</strong></div>
+                  <div class="stat-card"><span>Total Units</span><strong>${total}</strong></div>
+                  `;
+            } else {
+                const total = userData.length;
+                const admin = userData.filter(user => user.role === 'admin'). length;
+                const active = userData.filter(user => user.status === 'active').length;
+                statscontainer.innerHTML = `
+                  <div class="stat-card"><span>Total Users</span><strong>${total}</strong></div>
+                  <div class="stat-card"><span>Admins</span><strong>${admins}</strong></div>
+                  <div class="stat-card"><span>Total Accounts</span><strong>${active}</strong></div>
+                  `;
+            }
+            }
+
+            function openModal(title, html) {
+                modalTitle.textcontent = title;
+                modalBody.innerHTML = html;
+                editModaloverlay.classlist.add('open');
+                editModaloverlay.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeModal() {
+                editModaloverlay.classlist.remove('open');
+                editModaloverlay.setAttribute('aria-hidden', 'true');
+                modalBody.innerHTML ='';
+            }
+
+            closeModalBtn.addEventLister('click', closeModal);
+            editModaloverlay.addEventLister('click', (event) => {
+                if (event.target === editModaloverlay) closeModal();
+            });
+
+            document.addEventListener('keydown', (event) =>{
+                if (event.key === 'Escape' && editModaloverlay.classlist.contains('open')) {
+                    closeModal();
+                    window.openEquipmenteditModal = function(id) {
+                        const item = equipmentData.find(equipment => equipment.id ===id);
+                        if (!item) return;
+
+                        openModal('Edit Equipment', `
+                          <form id="editEuipmentForm" novalidate>
+                            <div class="two-col">
+                                <div class="field">
+                                    <label for="editEuipmentName">Equipment Name</label>
+                                    input type="text" id="editEuipmentName" name="euipmentName" value="${escapeHtml(item.name)}"/>
+                                    div class="error" data-error-for="equipmentName"></div>
+                                 </div>
+                                </div>
+                                
+                                <div class="field">
+                                    <label for="editEuipmentDescription">Description</lable>
+                                    <textarea id="editEuipmentDescription" name="euipmentDescription">${escapeHtml(item.description)}</textarea>
+                                    <div class="error" data-error-for="equipmentDescription"></div>
+                                    </div>
+                                    
+                                    <div class="two-col">
+                                        <div class="field>
+                                            <label for="editEquipmentQuantity">Quantity Available</label>
+                                            <input type="number" min="0" id="editEuipmentQuantity" name="equipmentQuantity" value="${item.quantity}"/>
+                                            <div class="error" data-error-for="equipmentQuantity"></div>
+                                            </div>
+                                            <div class="field">
+                                                <label for="editEuipmentprice"> Rental price per day ($)</label>
+                                                <input type="number" min="0" step="0.01" id="editEuipmentprice" name="equipmentprice" value="${item.priceperday}" />
+                                                <div class="error" data-error-for="equipmentprice"></div>
+                                              </div>
+                                            </div>
+                                            
+                                            div class="field">
+                                            <label for="editEuipmentStatus">Status</label>
+                                            <select id="editEuipmentStatus" name"equipmentstatus">
+                                                <option value="available" ${item.status ==='available' ? 'selected' : ''}>Available</option>
+                                                <option value="unavailable" ${item.status ==='unavailable' ? 'selected' : ''}>Unavailable</option>
+                                              </select>
+                                              </div>
+                                              
+                                              <div class="form-actions">
+                                                <button type="submit" class="btn btn-primary">save changes</button>
+                                                <button type="button" class="btn btn-secondary">onclick="closeModal()">cancel</button>
+                                              </div>
+                                              </form>
+                                              `);
+
+                                              const editForm = document.getElementById('editEuipmentForm');
+                                              editForm.addEventLister('submit', (event) => {
+                                                event.preventDefault();
+                                                const {isValid, data } = validateEquipmentForm(editForm);
+                                                if (!isValid) return;
+
+                                                item.name = data.equipmentName.trim();
+                                                item.category = data.equipmentCategory.trim();
+                                                item.description = data.equipmentDescription.trim();
+                                                item.quantity = Number (data.equipmentQuantity);
+                                                item.priceperDay = Number(data.equipmentPrice);
+                                                item.status = new FormData(editForm).get('euipmentStatus');
+
+                                                renderEquipmentTable();
+                                                render();
+                                                closeModal();
+                                              });
+                                            };
+
+                                            window.openUserEditModal = function(id) {
+                                                const user = userData.find(account => account.id ===id);
+                                                if (!user) return;
+
+                                                openModal('Edit user Account', `
+                                                <form id="editUserForm" novalidate>
+                                                    <div class="field">
+                                                        <label for="editUserName">Name</label>
+                                                        <input type="text" id="editUserName" name="userName" value="${escapeHtml(user.name)}"/>
+                                                        <div class="error" data-error-for="userName"></div>
+                                                        </div>
+                                                        
+                                                        <div class="field">
+                                                            <label for="editUserEmail">Email</label>
+                                                            <input type="email" id="editUserEmail" name="userEmail" value="${escapeHtml(user.email)}"/>
+                                                            <div class="error" data-error-for="userEmail"></div>
+                                                            </div>
+                                                            
+                                                            <div class="two-col">
+                                                             <div class="field>">
+                                                                <label for="editUserRole">Role</label>
+                                                                <select id="editUserRole" name="userRole">
+                                                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                                                    <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                                                    </select>
+                                                                    <div class="error" data-error-for="userRole"></div>
+                                                                    </div>
+                                                                    
+                                                                    <div class="field">
+                                                                        <label for="editUserStatus" Account Status</label>
+                                                                        <select id="editUserStatus" name="userStatus">
+                                                                            <option value="active" ${user.role === 'active' ? 'selected' : ''}>Active</option>
+                                                                            <option value="suspended" ${user.role === 'suspended' ? 'selected' : ''}>Suspended</option>
+                                                                            </select>
+                                                                          </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="form-actions">
+                                                                            <button type="submit" class="btn btn-primary">save changes</button>
+                                                                            <button type="submit" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                                                          </div>
+                                                                          </form>
+                                                                          `);
+
+                                                                          const editForm = document.getElementById('editUserForm');
+                                                                          editForm.addEventLister('submit', (event) =>{
+                                                                            event.preventDefault();
+                                                                            const { isValid, data } = validateUserForm(editForm, user.id);
+                                                                            if (!isValid) return;
+
+                                                                            user.name = data.userName.trim();
+                                                                            user.name = data.userEmail.trim();
+                                                                            user.name = data.userRole;
+                                                                            user.status = new FormData(editForm).get('userStatus');
+
+                                                                            renderUserTable();
+                                                                            renderStats();
+                                                                            closeModal();
+                                                                          });
+
+                                                                        };
+
+                                                                        Window.toggleEquipmentstatus = function(id) {
+                                                                            const items = equipmentData.find(equipment => equipment.id === id);
+                                                                            if (!item) return;
+                                                                            item.status = item.status === 'available' ? 'unavailable' : 'available';
+                                                                            renderEquipmentTable();
+                                                                            renderstats();
+                                                                        };
+
+                                                                         Window.toggleUserstatus = function(id) {
+                                                                            const user = userData.find(account => account.id === id);
+                                                                            if (!item) return;
+                                                                            user.status = user.status === 'active' ? 'suspended' : 'active';
+                                                                            renderEquipmentTable();
+                                                                            renderstats();
+                                                                         };
+
+                                                                          Window.deleteEquipment = function(id) {
+                                                                            const item = equipmentData.find(equipment => equipment.id === id);
+                                                                            if (!item) return;
+                                                                            const confirmed = window.confirm(`Delete equipment item "${item.name}"? This action cannot be undone.`);
+                                                                            if (!confirmed) return;
+
+                                                                            const index = equipmentData.findIndex(equipment => euipment.id === id);
+                                                                            equipmentData.splice(index, 1);
+                                                                            renderEquipmentTable();
+                                                                            renderstats();
+                                                                          };
+
+                                                                           Window.deleteUser = function(id) {
+                                                                            const user = userData.find(account => account.id === id);
+                                                                            if (!item) return;
+                                                                            const confirmed = window.confirm(`Delete user account for "${user.name}"? This action cannot be undone.`);
+                                                                            if (!confirmed) return;
+
+                                                                            const index = userData.findIndex(account => account.id === id);
+                                                                            userData.splice(index, 1);
+                                                                            renderEquipmentTable();
+                                                                            renderstats();
+                                                                           };
+
+                                                                           window.closeModal = closeModal;
+
+                                                                           document.getElementById('equipmentResetBtn').addEventListener('click',() => clearFormErrors(equipmentForm));
+                                                                           document.getElementById('userResetBtn').addEventListener('click',() => clearFormErrors(userForm));
+
+                                                                           renderEquipmentTable();
+                                                                           renderUserTable();
+                                                                           renderStats()
+
+
+
+                }
+            })
+        
+     </script>
+    
+</body>
+</html>
