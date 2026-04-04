@@ -169,6 +169,118 @@ $users = $conn->query("SELECT * FROM user ORDER BY created_at DESC")->fetch_all(
                 <tbody>
                     <?php foreach ($users as $user): ?>
                     <tr data-id="<?= $user['id'] ?>">
+                        <td><?= htmlspecialchars($user['full_name']) ?></td>
+                        <td><?= htmlspecialchars($user['email']) ?></td>
+                        <td><?= htmlspecialchars($user['role']) ?></td>
+                        <td>
+                            <span class="badge <?= $user['status'] === 'Active' ? 'badge-green' : 'badge-red' ?>">
+                                <?= htmlspecialchars($user['status']) ?>
+                            </span>
+                        </td>
+                        <td><?= date('d M Y', strtotime($user['created_at'])) ?></td>
+                        <td class="action-btns">
+                            <button class="icon-btn view-bookings-btn"
+                                title="View Bookings"
+                                data-id="<?= htmlspecialchars($user['full_name']) ?>">
+                                <i class="bi bi-calender3"></i>
+                            </button>
+                            <button class="icon-btn edit-user-btn"
+                                title="Edit User"
+                                data-id="<?= $user['id'] ?>"
+                                data-name="<?= htmlspecialchars($user['full_name']) ?>"
+                                data-name="<?= htmlspecialchars($user['email']) ?>"
+                                data-name="<?= htmlspecialchars($user['role']) ?>"
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="icon-btn suspend-btn"
+                                title="<?= $user['status'] === 'Active' ? 'Suspend' : 'Unsuspend' ?>"
+                                data-id="<?= $user['id'] ?>"
+                                data-status="<?= $user['status'] ?>"
+                                <i class="bi bi-<?= $user['status'] === 'Active' ? 'slash-circle' : 'check-circle' ?>"><?i>
+                            </button>
+                            <button class="icon-btn delete-btn delete-user-btn"
+                                title="Delete User"
+                                 data-id="<?= $user['id'] ?>"
+                                 data-name="<?= htmlspecialchars($user['full_name'])" ?>">
+                                 <i class="bi bi-trash"></i>
+                             </button>
+                         </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- USERS TAB CODE ENDS HERE -->
+</div>
+
+<!-- ADD EQUIPMENT MODAL STARTS HERE -->
+ <div class="modal-overlay" id="addEquipmentmodal">
+    <div class="modal-box modal-lg">
+        <h3>Add New Equipment</h3>
+        <div class="modal-grid">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="addName" placeholder="e.g Angle Grinder">
+            </div>
+            <div class="input-group">
+                <label>Brand</label>
+                <input type="text" id="addBrand" placeholder="e.g Dewalt">
+            </div>
+            <div class="input-group">
+                <label>Modal</label>
+                <input type="text" id="addModal" placeholder="e.g DWE402">
+            </div>
+            <div class="input-group">
+                <label>Daily Rate (£)</label>
+                <input type="number" id="addDaily" placeholder="0.00" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Weekly Rate (£)</label>
+                <input type="number" id="addWeekly" placeholder="0.00" step="0.01">
+            </div>
+            <div class="input-group full-width">
+                <label>Description (£)</label>
+                <textarea id="addDescription" rows="3" placeholder="Brief description..."><textarea>
+            </div>
+            <div class="input-group full-width">
+                <label>Image path (£)</label>
+                <input type="text" id="addImage" placeholder="/images/equipment/name.png">
+             </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="auth-btn" id="confirmAddEquipment">Add Equipment</button>
+            <button class="cancel-btn" id="cancelAddEquipment">Cancel</button>
+        </div>
+        <div class="message" id="addEquipmentMsg"></div>
+    </div>
+</div>
+<!-- ADD EQUIPMENT MODAL ENDS HERE -->
+
+<-- EDIT EQUIPMENT MODAL STARTS HERE --
+<div class="modal-overlay" id="editEquipmentmodal">
+    <div class="modal-box modal-lg">
+        <h3>Edit Equipment</h3>
+        <input type="hidden" id="editEqid">
+        <div class="modal-grid">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="editName">
+            </div>
+             <div class="input-group">
+                <label>Brand</label>
+                <input type="text" id="editBrand">
+            </div>
+            <div class="input-group">
+                <label>Modal</label>
+                <input type="text" id="editModal">
+            </div>
+
+
+            
+
+                
+                                
 
 
 
